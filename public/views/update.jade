@@ -1,0 +1,55 @@
+extends layout
+
+block content
+  .container
+    if (user.picture !== null && user.picture !== '')
+      img.img-circle.img-responsive(src="#{user.picture}" alt="#{user.first_name}")
+    
+    .login-container
+      form.form-horizontal.form-signin(action="/user/update" method="POST")
+        h2.form-signin-heading Update Information
+        br
+        .form-group
+          label.col-sm-2.control-label(for='username') Username
+          .col-sm-10
+            input.form-control(type="text" id="username" placeholder="Username" required="" autofocus="" autocomplete="off" name="username" value=user.username)
+
+        .form-group    
+          label.col-sm-2.control-label(for='email_address') Email
+          .col-sm-10
+            input.form-control(type="text" id="email_address" placeholder="Email address" required="" autofocus="" autocomplete="off" name="email_address" value=user.email_address)
+
+        .form-group
+          label.col-sm-2.control-label(for='picture') Picture
+          .col-sm-10
+            input.form-control(type="text" id="picture" placeholder="Picture Url"  autofocus="" autocomplete="off" name="picture" value=user.picture)
+
+        button.btn.btn-lg.btn-primary.btn-block.sign-in.update-user(type="submit") Update
+
+      if (user.password !== 'social_account')
+        form.form-horizontal.form-signin(action="/user/password" method="POST")
+          h2.form-signin-heading Update Password
+          br
+          .form-group
+            label.col-sm-2.control-label(for='old_password') Current
+            .col-sm-10
+              input.form-control(type="password" id="old_password" placeholder="Old Password" required="" autofocus="" autocomplete="off" name="old_password" )
+
+          .form-group
+           label.col-sm-2.control-label(for='new_password') New
+           .col-sm-10
+             input.form-control(type="password" id="new_password" placeholder="New Password" required="" autofocus="" autocomplete="off" name="new_password" )
+
+          .form-group
+           label.col-sm-2.control-label(for='confirm_password') New
+           .col-sm-10
+             input.form-control(type="password" id="confirm_password" placeholder="Confirm New Password" required="" autofocus="" autocomplete="off" name="confirm_password" )
+
+          button.btn.btn-lg.btn-primary.btn-block.sign-in.update-user(type="submit") Update 
+
+
+        br 
+        br
+
+      form.form-signin(action="/user/delete" method="POST")
+        button.btn.btn-lg.btn-danger.btn-block.sign-in(type="submit") Delete User

@@ -1,0 +1,154 @@
+extends ../layout
+
+block content
+	.container
+		h1 Build Elasticsearch Query
+		hr
+		form#frm-build-query.form-horizontal(role='form')
+			.row
+				.col-sm-6
+					.control-group
+						label.control-label(for='select_doc_type') Record Type:
+						.controls
+							select#select_doc_type(name='select_doc_type')
+								option(value='attempt', label='Intrusion Attempts') Intrusion Attempts
+								option(value='sessionlogentry', label='Session Log Entries') Session Log Entries
+								option(value='sessionrecording', label='Session Recordings') Session Recordings
+								option(value='sessiondownload', label='Files Downloaded during Sessions') Session File Downloads
+					#div-flds-common
+						.control-group
+							label.control-label(for='txt-bifrozt_host') Bifrozt Host
+							.controls
+								input#txt-bifrozt_host.filtercontrol-common(type='text')
+						.control-group
+							label.control-label(for='txt-source_ip') Source IP:
+							.controls
+								input#txt-source_ip.filtercontrol-common(type='text')
+						.control-group
+							label.control-label(for='txt-country_code') Country Code
+							.controls
+								input#txt-country_code.filtercontrol-common(type='text')
+						.control-group
+							label.control-label(for='txt-country_name') Country Name
+							.controls
+								input#txt-country_name.filtercontrol-common(type='text')
+					// end of div-flds-common
+					#div-flds-attempt
+						.control-group
+							label.control-label(for='txt-user') User Name:
+							.controls
+								input#txt-user.filtercontrol-attempt(type='text')
+						.control-group
+							label.control-label(for='txt-password') Password:
+							.controls
+								input#txt-password.filtercontrol-attempt(type='text')
+						.control-group
+							label.control-label(for='sel-success') Successful? (Y/N/Either)
+							.controls
+								select#sel_success.filtercontrol-attempt
+									option(value='1') Yes
+									option(value='0') No
+									option(value='-1') Either
+					#div-flds-sessionlogentry
+						.control-group
+							label.control-label(for='txt-channel') Channel:
+							.controls
+								input#txt-channel.filtercontrol-sessionlogentry(type='text')
+						.control-group
+							label.control-label(for='txt-message-log') Message:
+							.controls
+								input#txt-message-log.filtercontrol-sessionlogentry(type='text')
+					#div-flds-sessionrecording
+					#div-flds-sessiondownload
+						.control-group
+							label.control-label(for='txt-filename-download') Filename:
+							.controls
+								input#txt-filename-download.filtercontrol-sessiondownload(type='text')
+					br
+					.control-group
+						label.control-label(for='txt-num_to_fetch') Number of Records (default=10)
+						.controls
+							input#txt-num_to_fetch(type='text')
+				// end of query column
+				.col-sm-6
+					h3 Date Range
+					.checkbox
+						label
+							input#chk-any-start_date(type='checkbox')
+							| Any Start Date
+							input#dt-start_date(type='datetime', value='2015-03-01T00:00:01Z')
+						br
+						label
+							input#chk-any-end_date(type='checkbox')
+							| Any End Date
+							input#dt-end_date(type='datetime', value='2015-04-01T00:00:01Z')
+					h3 Which fields do you want to retrieve?
+						For each checkbox below, the portion of the id up to the first "-" is
+						the name of the corresponding field in the Elasticsearch database.
+					#div-common-checkboxes.checkbox
+						label
+							input#bifrozt_host-chk(type='checkbox')
+							| Bifrozt Host
+						br
+						label
+							input#timestamp-chk(type='checkbox')
+							| Timestamp
+						br
+						label
+							input#source_ip-chk(type='checkbox')
+							| Source IP
+						br
+						label
+							input#country_code-chk(type='checkbox')
+							| Country Code
+						br
+						label
+							input#country_name-chk(type='checkbox')
+							| Country Name
+					// end common-checkboxes
+					#div-checkboxes-attempt.checkbox
+						label
+							input#user-chk(type='checkbox')
+							| User Name
+						br
+						label
+							input#password-chk(type='checkbox')
+							| Password
+						br
+						label
+							input#success-chk(type='checkbox')
+							| Success
+					// end attempt-checkboxes
+					#div-checkboxes-sessionlogentry.checkbox
+						label
+							input#channel-chk(type='checkbox')
+							| Channel
+						br
+						label
+							input#message-chk(type='checkbox')
+							| Message
+					#div-checkboxes-sessionrecording.checkbox
+						label
+							input#filename-chk-recording(type='checkbox')
+							| Filename
+						br
+						label
+							input#contents-chk-recording(type='checkbox')
+							| Contents (Warning - may be very large)
+					// end sessionrecording-checkboxes
+					#div-checkboxes-sessiondownload.checkbox
+						label
+							input#filename-chk-download(type='checkbox')
+							| Filename
+						br
+						label
+							input#contents-chk-download(type='checkbox')
+							| Contents (Warning - may be very large)
+					// end sessiondownload-checkboxes
+					br
+					br
+					button#btn-execute-query.btn.btn-primary(type='button') Retrieve CSV
+				// end of date/fields column
+			// end div row				
+			.col-sm-6
+	script(src='/js/build_query.js')		

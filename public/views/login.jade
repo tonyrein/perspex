@@ -1,0 +1,32 @@
+extends layout
+
+block content
+	.container
+	.login-container
+		h1 Welcome to Perspex
+		hr
+		.row
+			.col-sm-4
+			.col-sm-4
+				if ( user === null || user === undefined) 
+					form.form-horizontal.form-signin(action="/login" method="POST")
+						h2.form-signin-heading Please sign in
+						br
+						.form-group
+							label.col-sm-2.control-label(for="username") Username
+							.col-sm-10
+							input.form-control(type="text" id="username" placeholder="Username" required="" autofocus="" name="username")
+	
+						.form-group
+							label.col-sm-2.control-label(for="password") Password
+							.col-sm-10
+							input.form-control(type="password" id="password" placeholder="Password" required="" name="password")
+	
+						button.btn.btn-lg.btn-primary.btn-block.sign-in(type="submit") Sign in
+	
+				else
+					.jumbotron
+						h2 You are already logged in.
+						p In order to log in as a different user, please log out first. 
+						a.btn.btn-lg.btn-primary(href="/logout" role="button") Logout
+			.col-sm-4
