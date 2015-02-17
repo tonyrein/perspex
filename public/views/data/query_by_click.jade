@@ -1,0 +1,59 @@
+div#query-by-click-controls
+	#div-flds-common
+		.control-group
+			label.control-label(for='txt-bifrozt_host') Bifrozt Host
+			.controls
+				input#txt-bifrozt_host.filtercontrol-common(type='text')
+		.control-group
+			label.control-label(for='txt-source_ip') Source IP:
+			.controls
+				input#txt-source_ip.filtercontrol-common(type='text')
+		.control-group
+			label.control-label(for='txt-country_code') Country Code
+			.controls
+				input#txt-country_code.filtercontrol-common(type='text')
+		.control-group
+			label.control-label(for='txt-country_name') Country Name
+			.controls
+				input#txt-country_name.filtercontrol-common(type='text')
+	// end of div-flds-common
+	#div-flds-attempt
+		.control-group
+			label.control-label(for='txt-user') User Name:
+			.controls
+				input#txt-user.filtercontrol-attempt(type='text')
+		.control-group
+			label.control-label(for='txt-password') Password:
+			.controls
+				input#txt-password.filtercontrol-attempt(type='text')
+		.control-group
+			label.control-label(for='sel-success') Successful? (Y/N/Either)
+			.controls
+				select#sel_success.filtercontrol-attempt
+					option(value='1') Yes
+					option(value='0') No
+					option(value='-1') Either
+	#div-flds-sessionlogentry
+		.control-group
+			label.control-label(for='txt-channel') Channel:
+			.controls
+				input#txt-channel.filtercontrol-sessionlogentry(type='text')
+		.control-group
+			label.control-label(for='txt-message-log') Message:
+			.controls
+				input#txt-message-log.filtercontrol-sessionlogentry(type='text')
+	#div-flds-sessionrecording
+	#div-flds-sessiondownload
+		.control-group
+			label.control-label(for='txt-filename-download') Filename:
+			.controls
+				input#txt-filename-download.filtercontrol-sessiondownload(type='text')
+	
+//	.control-group
+//		label.control-label(for='select_doc_type') Record Type:
+//		.controls
+//			select#select_doc_type(name='select_doc_type')
+//				option(value='attempt', label='Intrusion Attempts') Intrusion Attempts
+//				option(value='sessionlogentry', label='Session Log Entries') Session Log Entries
+//				option(value='sessionrecording', label='Session Recordings') Session Recordings
+//				option(value='sessiondownload', label='Session File Downloads') Session File Downloads

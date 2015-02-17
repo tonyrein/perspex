@@ -108,7 +108,10 @@ exports.help = function(req, res) {
 		}, {
 			title : 'Help',
 			href : '/help'
-		}, ],
+		}, {
+			title : 'Logout',
+			href : '/logout'
+		} ],
 		user : req.user
 	});
 };
@@ -130,7 +133,10 @@ exports.doDataPages = function(req, res)
 		}, {
 			title : 'Help',
 			href : '/help'
-		}, ],
+		}, {
+			title : 'Logout',
+			href : '/logout'
+		} ],
 		user : req.user
 	});
 	

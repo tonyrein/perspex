@@ -1,0 +1,59 @@
+h3 Which fields do you want to retrieve?
+		//- For each checkbox below, the portion of the id up to the first "-" is
+		//- the name of the corresponding field in the Elasticsearch database.
+	#div-common-checkboxes.checkbox
+		label
+			input#bifrozt_host-chk(type='checkbox')
+			| Bifrozt Host
+		br
+		label
+			input#timestamp-chk(type='checkbox')
+			| Timestamp
+		br
+		label
+			input#source_ip-chk(type='checkbox')
+			| Source IP
+		br
+		label
+			input#country_code-chk(type='checkbox')
+			| Country Code
+		br
+		label
+			input#country_name-chk(type='checkbox')
+			| Country Name
+	#div-checkboxes-attempt.checkbox
+		label
+			input#user-chk(type='checkbox')
+			| User Name
+		br
+		label
+			input#password-chk(type='checkbox')
+			| Password
+		br
+		label
+			input#success-chk(type='checkbox')
+			| Success
+	#div-checkboxes-sessionlogentry.checkbox
+		label
+			input#channel-chk(type='checkbox')
+			| Channel
+		br
+		label
+			input#message-chk(type='checkbox')
+			| Message
+	#div-checkboxes-sessionrecording.checkbox
+		label
+			input#filename-chk-recording(type='checkbox')
+			| Filename
+		br
+		label
+			input#contents-chk-recording(type='checkbox')
+			| Contents (Warning - may be very large)
+	#div-checkboxes-sessiondownload.checkbox
+		label
+			input#filename-chk-download(type='checkbox')
+			| Filename
+		br
+		label
+			input#contents-chk-download(type='checkbox')
+			| Contents (Warning - may be very large)

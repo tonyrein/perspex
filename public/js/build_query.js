@@ -7,9 +7,12 @@ var QPProcessor = {
 	init : function() {
 		$("#select_doc_type").val('attempt');
 		$("#select_doc_type").bind('change', QPProcessor.selChangeRecordType);
+		$("#select_doc_type_all").bind('change', QPProcessor.selChangeRecordType);
+		$( "input[name=query_method]:radio" ).bind('click', QPProcessor.queryMethodChanged);
+		$( "input[name=query_method]:radio" ).val('FIELDS');
 		QPProcessor.setupRecordTypeOptions('attempt');
-		$("#chk-any-start_date")
-				.bind('click', QPProcessor.chkClickDateCheckbox);
+		QPProcessor.setupQueryMethodOptions('FIELDS');
+		$("#chk-any-start_date").bind('click', QPProcessor.chkClickDateCheckbox);
 		$("#chk-any-end_date").bind('click', QPProcessor.chkClickDateCheckbox);
 		$("#btn-execute-query").bind('click', QPProcessor.btnExecuteClicked);
 		QPProcessor.initDateControls();
@@ -27,7 +30,16 @@ var QPProcessor = {
 	// event handlers
 	selChangeRecordType : function(ev) {
 		ev.preventDefault();
-		QPProcessor.setupRecordTypeOptions(ev.target.value);
+		currentRecordType = ev.target.value;
+		QPProcessor.setupRecordTypeOptions(currentRecordType);
+	},
+	
+	queryMethodChanged: function(ev)
+	{
+		ev.preventDefault();
+		//alert(ev.target.dataset.val);
+		currentQueryMethod = ev.target.dataset.val;
+		QPProcessor.setupQueryMethodOptions(currentQueryMethod);
 	},
 
 	chkClickDateCheckbox : function(ev) {
@@ -50,10 +62,35 @@ var QPProcessor = {
 	btnExecuteClicked : function(ev) {
 		QPProcessor.executeQuery();
 	}, // end btnExecuteClicked
+	
 
 	// methods used by event handlers
-	setupRecordTypeOptions : function(selectedType) {
-		switch (selectedType) {
+	showQueryByClick: function()
+	{
+		$("#query-by-click-controls").removeClass('hidden');
+		$("#freeform-query-controls").addClass('hidden');
+	},
+	
+	showQueryFreeform: function()
+	{
+		$("#freeform-query-controls").removeClass('hidden');
+		$("#query-by-click-controls").addClass('hidden');
+	},
+
+	setupQueryMethodOptions: function(currentQueryMethod)
+	{
+		switch(currentQueryMethod)
+		{
+			case 'FIELDS':
+				QPProcessor.showQueryByClick();
+				break;
+			case 'FREEFORM':
+				QPProcessor.showQueryFreeform();
+				break;
+		}
+	},
+	setupRecordTypeOptions : function(currentRecordType) {
+		switch (currentRecordType) {
 		case 'attempt':
 			$("#div-flds-attempt").removeClass('hide');
 			$("#div-flds-sessionlogentry").addClass('hide');
@@ -98,6 +135,7 @@ var QPProcessor = {
 			$("#div-checkboxes-sessionrecording").addClass('hide');
 			$("#div-checkboxes-sessiondownload").removeClass('hide');
 			break;
+		
 		} // end switch
 
 		// var types = [
@@ -254,6 +292,9 @@ var QPProcessor = {
 	},
 
 }; // end of var QPProcessor = ...
+
+var currentRecordType = 'attempt';
+var currentQueryMethod = 'FIELDS';
 
 // run init when page is ready:
 $(document).ready(function() {

@@ -34,13 +34,9 @@ exports.localUpdate = function(req, res) {
     function updateUser(callback) {
 		if(user) {
 			user.updateAttributes({
-				first_name: req.body.first_name,
-				last_name: req.body.last_name,
 				username: req.body.username,
 				email_address: req.body.email_address,
-				gender: req.body.gender,
-				location: req.body.location,
-				picture: req.body.picture
+
 			})
 			.success(function() {
 				return res.json({ redirect: '/user/update' });
