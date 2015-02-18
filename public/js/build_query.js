@@ -14,7 +14,7 @@ var QPProcessor = {
 		QPProcessor.setupQueryMethodOptions('FIELDS');
 		$("#chk-any-start_date").bind('click', QPProcessor.chkClickDateCheckbox);
 		$("#chk-any-end_date").bind('click', QPProcessor.chkClickDateCheckbox);
-		$("#btn-execute-query").bind('click', QPProcessor.btnExecuteClicked);
+		$("#btn-get-csv").bind('click', QPProcessor.btnCSVClicked);
 		QPProcessor.initDateControls();
 		$("#sel_success").val('-1');
 	},
@@ -29,15 +29,16 @@ var QPProcessor = {
 
 	// event handlers
 	selChangeRecordType : function(ev) {
-		ev.preventDefault();
+		//ev.preventDefault();
 		currentRecordType = ev.target.value;
 		QPProcessor.setupRecordTypeOptions(currentRecordType);
 	},
 	
 	queryMethodChanged: function(ev)
 	{
-		ev.preventDefault();
+//		ev.preventDefault();
 		//alert(ev.target.dataset.val);
+//		ev.target.prop('checked', true);
 		currentQueryMethod = ev.target.dataset.val;
 		QPProcessor.setupQueryMethodOptions(currentQueryMethod);
 	},
@@ -59,8 +60,8 @@ var QPProcessor = {
 		}
 	},
 
-	btnExecuteClicked : function(ev) {
-		QPProcessor.executeQuery();
+	btnCSVClicked : function(ev) {
+		QPProcessor.getCSV();
 	}, // end btnExecuteClicked
 	
 
@@ -248,7 +249,7 @@ var QPProcessor = {
 		}
 	},
 	// Gather values of the form controls and assemble a query URL.
-	executeQuery : function() {
+	getCSV : function() {
 		var query_params = QPProcessor.gatherQueryParams();
 		var num_to_fetch = QPProcessor.getQuantity();
 		var date_params = QPProcessor.getDateRange();

@@ -12,7 +12,6 @@ block content
 			label.radio-inline
 			input#QueryMethod(data-val='FREEFORM', name='query_method', value='FREEFORM', type='radio')
 			| Typing free-form query string
-
 			
 
 			.row
@@ -39,7 +38,12 @@ block content
 					
 					br
 					br
-					button#btn-execute-query.btn.btn-primary(type='button') Retrieve CSV
+					hr
+					button#btn-get-count.btn.btn-primary(type='button') Check Count
+					&nbsp;&nbsp;
+					button#btn-get-csv.btn.btn-primary(type='button') Retrieve CSV
+					&nbsp;&nbsp;
+					button#btn-get-table.btn.btn-primary(type='button') Display Table
 				// end of date/fields column
 			// end div row				
 			.col-sm-6

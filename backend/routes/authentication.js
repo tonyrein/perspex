@@ -4,15 +4,39 @@ User 	 = require('../db/sql').User,
 async	 = require('async'),
 passport = require('passport');
 
-exports.isAuthenticated = function(req, res, next) {
-  if (req.user) return next();
-  res.redirect('/login');
+exports.isAuthenticated = function(req, resp, next) {
+  if (req.user) { return next(); }
+  resp.redirect('/login');
 };
 
+
+// Use this to verify that logged-in user has
+// sufficient privileges for desired operation.
+// For example:
+//	app.get('/admin/dangerous_stuff',
+//		isAuthenticated,
+//		isInRole('ADMIN'),
+//		function(req, resp
+//		{ ... }
+//	);
+
+exports.isInRole = function(role)
+{
+	return function(req, resp, next)
+	{
+		if (req.user && req.user.role === role) { next(); }
+		resp.redirect('/login');
+	};
+};
 //local authentication
 exports.localCreate = function(req, res) {
+	// set role to "user" -- creating an admin
+	// is done elsewhere.
+	req.body.role = 'USER';
 	auth.localAuthentication(req, res);
 };
+
+
 
 // Update user's data
 exports.localUpdate = function(req, res) {
@@ -34,9 +58,9 @@ exports.localUpdate = function(req, res) {
     function updateUser(callback) {
 		if(user) {
 			user.updateAttributes({
+				// Updating "role" is an Admin function only.
 				username: req.body.username,
 				email_address: req.body.email_address,
-
 			})
 			.success(function() {
 				return res.json({ redirect: '/user/update' });
@@ -111,19 +135,6 @@ exports.localDelete = function(req, res) {
 	}
 };
 
-// Unlink social account from current user
-exports.unlink = function(req, res, attributes) {
-	var user = req.user;
-	if( user ) {
-		user.updateAttributes(attributes)
-		.success(function() {
-			res.redirect('/user/update');
-		})
-		.failure(function(error) {
-	       return res.json({ error: error }); 
-		});
-	}
-};
 
 // Local authentication redirects
 exports.localAuthentication = passport.authenticate('local', { 

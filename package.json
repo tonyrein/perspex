@@ -1,14 +1,13 @@
 {
-  "name": "starterpack.js",
+  "name": "perspex.js",
   "version": "0.1.0",
   "devDependencies": {
-    "mysql": "~2.0.0-alpha9",
     "orm": "~2.1.3"
   },
   "readmeFilename": "README.md",
   "gitHead": "38a5671e490730a2805b58ee7641449d124ddec6",
-  "description": "starterpack.js",
-  "main": "router.js",
+  "description": "Perspex",
+  "main": "perspex-app.js",
   "dependencies": {
     "express": "~3.4.4",
     "mysql": "~2.0.0-alpha9",
@@ -31,11 +30,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/nickalto/starterpack.js.git"
+    "url": ""
   },
-  "author": "Nick Alto",
-  "license": "BSD",
+  "author": "Tony Rein",
+  "license": "MIT",
   "bugs": {
-    "url": "https://github.com/nickalto/starterpack.js/issues"
+    "url": ""
   }
 }
