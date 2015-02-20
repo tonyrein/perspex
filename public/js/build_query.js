@@ -7,18 +7,22 @@ var QPProcessor = {
 	init : function() {
 		$("#select_doc_type").val('attempt');
 		$("#select_doc_type").bind('change', QPProcessor.selChangeRecordType);
-		$("#select_doc_type_all").bind('change', QPProcessor.selChangeRecordType);
-		$( "input[name=query_method]:radio" ).bind('click', QPProcessor.queryMethodChanged);
-		$( "input[name=query_method]:radio" ).val('FIELDS');
+		$("#select_doc_type_all").bind('change',
+				QPProcessor.selChangeRecordType);
+		$("input[name=query_method]:radio").bind('click',
+				QPProcessor.queryMethodChanged);
+		$("input[name=query_method]:radio").val('FIELDS');
 		QPProcessor.setupRecordTypeOptions('attempt');
 		QPProcessor.setupQueryMethodOptions('FIELDS');
-		$("#chk-any-start_date").bind('click', QPProcessor.chkClickDateCheckbox);
+		$("#chk-any-start_date")
+				.bind('click', QPProcessor.chkClickDateCheckbox);
 		$("#chk-any-end_date").bind('click', QPProcessor.chkClickDateCheckbox);
 		$("#btn-get-csv").bind('click', QPProcessor.btnCSVClicked);
+		$("#btn-get-count").bind('click', QPProcessor.btnCountClicked);
+		
 		QPProcessor.initDateControls();
 		$("#sel_success").val('-1');
 	},
-
 
 	initDateControls : function() {
 		$("#chk-any-start_date").prop('checked', true);
@@ -29,16 +33,15 @@ var QPProcessor = {
 
 	// event handlers
 	selChangeRecordType : function(ev) {
-		//ev.preventDefault();
+		// ev.preventDefault();
 		currentRecordType = ev.target.value;
 		QPProcessor.setupRecordTypeOptions(currentRecordType);
 	},
-	
-	queryMethodChanged: function(ev)
-	{
-//		ev.preventDefault();
-		//alert(ev.target.dataset.val);
-//		ev.target.prop('checked', true);
+
+	queryMethodChanged : function(ev) {
+		// ev.preventDefault();
+		// alert(ev.target.dataset.val);
+		// ev.target.prop('checked', true);
 		currentQueryMethod = ev.target.dataset.val;
 		QPProcessor.setupQueryMethodOptions(currentQueryMethod);
 	},
@@ -60,34 +63,38 @@ var QPProcessor = {
 		}
 	},
 
+	btnCountClicked: function(ev)
+	{
+		QPProcessor.getCount();
+	},
+	
 	btnCSVClicked : function(ev) {
 		QPProcessor.getCSV();
 	}, // end btnExecuteClicked
-	
+
+	btnTableClicked : function(ev) {
+//		QPProcessor.getTabularData();
+	},
 
 	// methods used by event handlers
-	showQueryByClick: function()
-	{
+	showQueryByClick : function() {
 		$("#query-by-click-controls").removeClass('hidden');
 		$("#freeform-query-controls").addClass('hidden');
 	},
-	
-	showQueryFreeform: function()
-	{
+
+	showQueryFreeform : function() {
 		$("#freeform-query-controls").removeClass('hidden');
 		$("#query-by-click-controls").addClass('hidden');
 	},
 
-	setupQueryMethodOptions: function(currentQueryMethod)
-	{
-		switch(currentQueryMethod)
-		{
-			case 'FIELDS':
-				QPProcessor.showQueryByClick();
-				break;
-			case 'FREEFORM':
-				QPProcessor.showQueryFreeform();
-				break;
+	setupQueryMethodOptions : function(currentQueryMethod) {
+		switch (currentQueryMethod) {
+		case 'FIELDS':
+			QPProcessor.showQueryByClick();
+			break;
+		case 'FREEFORM':
+			QPProcessor.showQueryFreeform();
+			break;
 		}
 	},
 	setupRecordTypeOptions : function(currentRecordType) {
@@ -128,7 +135,7 @@ var QPProcessor = {
 		case 'sessiondownload':
 			$("#div-flds-attempt").addClass('hide');
 			$("#div-flds-sessionlogentry").addClass('hide');
-			$("#div-flds-sessionrecording").addClass('hide');
+			$("#div-flds-sessionrecording").addClass('hide');// switch(dataFormat)
 			$("#div-flds-sessiondownload").removeClass('hide');
 
 			$("#div-checkboxes-attempt").addClass('hide');
@@ -136,11 +143,9 @@ var QPProcessor = {
 			$("#div-checkboxes-sessionrecording").addClass('hide');
 			$("#div-checkboxes-sessiondownload").removeClass('hide');
 			break;
-		
+
 		} // end switch
 
-		// var types = [
-		// 'attempt','sessionlogentry','sessionrecording','sessiondownload' ];
 	},
 
 	gatherQueryParams : function() {
@@ -226,70 +231,121 @@ var QPProcessor = {
 		return retString;
 	},
 
-	getESDocType: function()
-	{
+	getESDocType : function() {
 		var scratchString = $("#select_doc_type").val();
 		// convert this into the ES document type:
 		switch (scratchString) {
 		case 'attempt':
-			return  'HonSSH_Attempt';
+			return 'HonSSH_Attempt';
 			break;
 		case 'sessionlogentry':
-			return  'HonSSH_SessionLogEntry';
+			return 'HonSSH_SessionLogEntry';
 			break;
 		case 'sessionrecording':
-			return  'HonSSH_SessionRecording';
+			return 'HonSSH_SessionRecording';
 			break;
 		case 'sessiondownload':
-			return  'HonSSH_SessionDownload';
+			return 'HonSSH_SessionDownload';
 			break;
 		default:
 			alert('Invalid document type selected. Please try again.');
 			return null;
 		}
 	},
-	// Gather values of the form controls and assemble a query URL.
+
+	assembleParameters : function() {
+		var assembly = {};
+		assembly.query_params = QPProcessor.gatherQueryParams();
+		assembly.num_to_fetch = QPProcessor.getQuantity();
+		assembly.date_params = QPProcessor.getDateRange();
+		assembly.field_list = QPProcessor.getFieldList();
+		assembly.doc_type = QPProcessor.getESDocType();
+		if (!assembly.doc_type) {
+			alert('Invalid document type selected. Please try again.');
+			return;
+		}
+		return assembly;
+	},
+
+	buildParameterString : function(assembly) {
+		var paramString = '';
+		if (assembly.field_list) {
+			paramString += '&fields=' + assembly.field_list;
+		}
+		if (assembly.date_params.start_date) {
+			paramString += '&start_date=' + assembly.date_params.start_date;
+		}
+		if (assembly.date_params.end_date) {
+			paramString += '&end_date=' + assembly.date_params.end_date;
+		}
+		paramString += '&num_to_fetch=' + assembly.num_to_fetch;
+		var scratchString = '';
+		for ( var k in assembly.query_params) {
+			if (assembly.query_params.hasOwnProperty(k)) {
+				if (scratchString) {
+					scratchString += ' AND ';
+				}
+				scratchString += k + ':' + assembly.query_params[k];
+			}
+		}
+		if (scratchString.length > 0) {
+			paramString += '&query_string=' + scratchString;
+		}
+		return paramString;
+	},
+
+	// Gather values of the form controls and assemble a query URL, then go to
+	// that url..
 	getCSV : function() {
-		var query_params = QPProcessor.gatherQueryParams();
-		var num_to_fetch = QPProcessor.getQuantity();
-		var date_params = QPProcessor.getDateRange();
-		var field_list = QPProcessor.getFieldList();
-		var esDocType = QPProcessor.getESDocType();
-		if ( ! esDocType )
-		{
+		var assembly = QPProcessor.assembleParameters();
+		if (!assembly.doc_type) {
 			alert('Invalid document type selected. Please try again.');
 			return;
 		}
 
-
 		// TODO: Sanitize input!
-//		var query_url = 'http://' + window.location.host + '/get_data?doc_type=' + esDocType;
-		var query_url = 'http://' + window.location.host + '/non_ui/get_data?doc_type=' + esDocType;
-		if (field_list) {
-			query_url += '&fields=' + field_list;
-		}
-		if (date_params.start_date) {
-			query_url += '&start_date=' + date_params.start_date;
-		}
-		if (date_params.end_date) {
-			query_url += '&end_date=' + date_params.end_date;
-		}
-		query_url += '&num_to_fetch=' + num_to_fetch;
-		var scratchString = '';
-		for ( var k in query_params) {
-			if (query_params.hasOwnProperty(k)) {
-				if (scratchString) {
-					scratchString += ' AND ';
-				}
-				scratchString += k + ':' + query_params[k];
-			}
-		}
-		if (scratchString.length > 0) {
-			query_url += '&query_string=' + scratchString;
-		}
+		var query_url = 'http://' + window.location.host
+				+ '/non_ui/get_data?doc_type=' + assembly.doc_type;
+
+		query_url += QPProcessor.buildParameterString(assembly);
 		alert("URL: " + query_url);
 		window.location = query_url;
+	},
 
+	// Should result in tabular display in a new page.
+	// getTabularData: function() { QPProcessor.getData('TABLE'); },
+
+	// Display count of records ES would send back for this query.
+	// Assemble and dispatch an AJAX call and
+	// display the result in an alert box.
+	getCount : function() {
+		var assembly = QPProcessor.assembleParameters();
+		if (!assembly.doc_type) {
+			alert('Invalid document type selected. Please try again.');
+			return;
+		}
+
+		// TODO: Sanitize input!
+		var queryUrl = 'http://' + window.location.host + '/non_ui/get_count';
+		// ?doc_type=' + assembly.doc_type;
+		var queryString = QPProcessor.buildParameterString(assembly);
+
+		$.ajax({
+			url : queryUrl,
+			type : 'GET',
+			dataType : 'JSON',
+			data : queryString + '?doc_type=' + assembly.doc_type,
+			success : function(json) {
+				alert('Query would return ' + json.count + ' records.');
+			},
+			error : function(xhr, status, errorThrown) {
+				alert("Sorry, there was a problem!");
+				console.log("Error: " + errorThrown);
+				console.log("Status: " + status);
+				console.dir(xhr);
+			},
+
+		});
 	},
 
 }; // end of var QPProcessor = ...

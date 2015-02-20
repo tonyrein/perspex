@@ -30,7 +30,7 @@ app.post('/user/password', auth_routes.isAuthenticated, auth_routes.localPasswor
 app.post('/login', auth_routes.localAuthentication);
 
 app.get('/non_ui/get_data', auth_routes.isAuthenticated, non_ui_routes.get_data);
-
+app.get('/non_ui/get_count', auth_routes.isAuthenticated, non_ui_routes.get_count);
 // 404 catchall
 app.use( app_routes.catchall);
 

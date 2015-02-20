@@ -94,6 +94,24 @@ function buildClientParams(metaParams)
 } // end of buildBody()
 
 
+
+function _retrieveCountAsJSON(clientParams, outStream)
+{
+	var es_cfg = require('./config').config.es;
+
+	var elasticsearch = require('elasticsearch');
+	var client = new elasticsearch.Client({
+		host : es_cfg.host + ':' + es_cfg.port
+	});
+	client.count(clientParams,
+	       function(err, resp)
+	       {
+				var jsonObj = { count: resp.count };
+				outStream.send(JSON.stringify(jsonObj));
+	       }
+	 );
+}
+
 /**
  * Use Elasticsearch's scroll and scan api to
  * retrieve desired number of records.
@@ -174,6 +192,14 @@ function _doScroll(clientParams, howMany, outStream)
 	});
 } // end of _doScroll()
 
+
+
+
+/**
+ * Use _doScroll() to snag data
+ * and pipe it in CSV format into stream passed
+ * as part of metaParams.
+ */
 exports.getCSV = function(metaParams)
 {
 	var clientParams = buildClientParams(metaParams);
@@ -186,3 +212,17 @@ exports.getCSV = function(metaParams)
 			'attachment;filename=query_result.csv');
 	_doScroll(clientParams, howMany, outStream);
 };
+
+// Send, as JSON, the count of records that would be returned by
+// this query. This was probably invoked as the result of an
+// AJAX call from the client.
+exports.getCount = function(metaParams)
+{
+	var clientParams = buildClientParams(metaParams);
+	var howMany = metaParams.how_many || 1000;
+	var outStream = metaParams.out_stream;
+	// initialize output stream -- tell browser
+	// what we're going to send:
+	outStream.setHeader('Content-Type', 'application/json');
+	_retrieveCountAsJSON(clientParams, outStream)
+}
