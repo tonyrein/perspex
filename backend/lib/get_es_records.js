@@ -111,6 +111,12 @@ function _retrieveCountAsJSON(clientParams, outStream)
 		{
 			console.log(err);
 			console.log(err.stack);
+			var jsonObj = {
+					error:
+						'Unable to retrieve count. Please ask your system administrator to check Perspex logs.'
+						};
+			outStream.send(JSON.stringify(jsonObj));
+			
 		}
 		else
 		{
@@ -180,7 +186,7 @@ function _doScroll(clientParams, howMany, outStream)
 			running_total++;
 			// Return false as soon we've written as many
 			// records as were requested. That will stop the
-			// implied loop.
+			// implied loop created by the call to every().
 			return running_total < howMany;
 		});
 		// If there are still records to get, then
@@ -207,7 +213,10 @@ function _doScroll(clientParams, howMany, outStream)
  * part of metaParams.
  */
 exports.getCSV = function(metaParams)
-{
+{	// This should have logic added to differentiate a request for
+	// data in CSV form vs. other (tabular display) and call the
+	// correct library function. For now, CSV is the only choice.
+
 	var clientParams = buildClientParams(metaParams);
 	var howMany = metaParams.how_many || 1000;
 	var outStream = metaParams.out_stream;

@@ -34,16 +34,12 @@ var QPProcessor = {
 	// event handlers
 	selChangeRecordType : function(ev)
 	{
-		// ev.preventDefault();
 		currentRecordType = ev.target.value;
 		QPProcessor.setupRecordTypeOptions(currentRecordType);
 	},
 
 	queryMethodChanged : function(ev)
 	{
-		// ev.preventDefault();
-		// alert(ev.target.dataset.val);
-		// ev.target.prop('checked', true);
 		currentQueryMethod = ev.target.dataset.val;
 		QPProcessor.setupQueryMethodOptions(currentQueryMethod);
 	},
@@ -80,7 +76,7 @@ var QPProcessor = {
 	btnCSVClicked : function(ev)
 	{
 		QPProcessor.getCSV();
-	}, // end btnExecuteClicked
+	},
 
 	btnTableClicked : function(ev)
 	{
@@ -112,6 +108,7 @@ var QPProcessor = {
 				break;
 		}
 	},
+
 	setupRecordTypeOptions : function(currentRecordType)
 	{
 		switch (currentRecordType)
@@ -179,9 +176,8 @@ var QPProcessor = {
 			}
 		});
 		// Now get the text fields for whichever doc type is selected:
-		var selectedType = $("#select_doc_type").val();
 		// Change this selector to use classes of elements instead?
-		var selector = "#div-flds-" + selectedType + " input[type=text]";
+		var selector = "#div-flds-" + currentRecordType + " input[type=text]";
 		$(selector).each(function(ind, el)
 		{
 			if (el.value)
@@ -192,7 +188,7 @@ var QPProcessor = {
 			}
 		});
 		// If "attempt" is selected, get "success" selection:
-		if ('attempt' === selectedType)
+		if ('attempt' === currentRecordType)
 		{
 			var sVal = $("#sel_success").val();
 			if (sVal !== '-1')
@@ -200,7 +196,6 @@ var QPProcessor = {
 				query_params['success'] = sVal;
 			}
 		}
-		// alert("selector:" + selector);
 		return query_params;
 	},
 
@@ -250,7 +245,7 @@ var QPProcessor = {
 		});
 		// now get the checkboxes specific to the selected record type
 		var selectedType = $("#select_doc_type").val();
-		var selector = "#div-checkboxes-" + selectedType + " input[type=checkbox]";
+		var selector = "#div-checkboxes-" + currentRecordType + " input[type=checkbox]";
 		$(selector).each(function(ind, el)
 		{
 			if (el.checked)
@@ -271,7 +266,7 @@ var QPProcessor = {
 	{
 		var scratchString = $("#select_doc_type").val();
 		// convert this into the ES document type:
-		switch (scratchString)
+		switch (currentRecordType)
 		{
 			case 'attempt':
 				return 'HonSSH_Attempt';
@@ -294,7 +289,6 @@ var QPProcessor = {
 	assembleParameters : function()
 	{
 		var assembly = {};
-		// assembly.query_params = QPProcessor.gatherQueryParams();
 		assembly.num_to_fetch = QPProcessor.getQuantity();
 		assembly.date_params = QPProcessor.getDateRange();
 		assembly.field_list = QPProcessor.getFieldList();
@@ -363,24 +357,6 @@ var QPProcessor = {
 		 window.location = query_url;
 	},
 
-	// // Gather values of the form controls and assemble a query URL, then go to
-	// // that url..
-	// getCSV : function() {
-	// var assembly = QPProcessor.assembleParameters();
-	// if (!assembly.doc_type) {
-	// alert('Invalid document type selected. Please try again.');
-	// return;
-	// }
-	//
-	// // TODO: Sanitize input!
-	// var query_url = 'http://' + window.location.host
-	// + '/non_ui/get_data?doc_type=' + assembly.doc_type;
-	//
-	// query_url += QPProcessor.buildParameterString(assembly);
-	// alert("URL: " + query_url);
-	// window.location = query_url;
-	// },
-
 	// Should result in tabular display in a new page.
 	// getTabularData: function() { QPProcessor.getData('TABLE'); },
 
@@ -398,7 +374,6 @@ var QPProcessor = {
 
 		// TODO: Sanitize input!
 		var queryUrl = 'http://' + window.location.host + '/non_ui/get_count';
-		// var queryString = QPProcessor.buildParameterString(assembly);
 
 		$.ajax({
 			url : queryUrl,
