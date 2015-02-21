@@ -16,7 +16,8 @@ function buildClientParams(metaParams)
 	if (metaParams.fields && metaParams.fields.length > 0)
 	{
 		params.fields = metaParams.fields;
-	} else
+	}
+	else
 	// otherwise, use defaults:
 	{
 		var es_cfg = require('./config').config.es;
@@ -46,7 +47,7 @@ function buildClientParams(metaParams)
 	}
 	// Are there dates specified in the search parameters? If so,
 	// convert the dates into their "values" (seconds since Epoch)
-	// and build up a range string such as 
+	// and build up a range string such as
 	// "timestamp:{1420261200000 TO 1420347545000}" If only
 	// one date is given, use '*' for the other end of the range.
 	if (metaParams.start_date || metaParams.end_date)
@@ -58,7 +59,8 @@ function buildClientParams(metaParams)
 			scratchString = u.stripDoubleQuotes(metaParams.start_date);
 			scratchDate = new Date(scratchString);
 			startString = scratchDate.valueOf().toString();
-		} else
+		}
+		else
 		{
 			startString = '*';
 		}
@@ -67,7 +69,8 @@ function buildClientParams(metaParams)
 			scratchString = u.stripDoubleQuotes(metaParams.end_date);
 			scratchDate = new Date(scratchString);
 			endString = scratchDate.valueOf().toString();
-		} else
+		}
+		else
 		{
 			endString = '*';
 		}
@@ -77,13 +80,14 @@ function buildClientParams(metaParams)
 	// Finally, if there is a query string, add that.
 	if (metaParams.query_string)
 	{
-		var scratchString=metaParams.query_string;
+		var scratchString = metaParams.query_string;
 		if (scratchString) // anything left after double quotes are stripped?
 		{
 			if (params.q)
 			{
 				params.q += ' AND ' + scratchString;
-			} else
+			}
+			else
 			{
 				params.q = scratchString;
 			}
@@ -91,9 +95,7 @@ function buildClientParams(metaParams)
 	}
 	// All done -- return the result
 	return params;
-} // end of buildBody()
-
-
+} // end of buildClientParams()
 
 function _retrieveCountAsJSON(clientParams, outStream)
 {
@@ -103,27 +105,34 @@ function _retrieveCountAsJSON(clientParams, outStream)
 	var client = new elasticsearch.Client({
 		host : es_cfg.host + ':' + es_cfg.port
 	});
-	client.count(clientParams,
-	       function(err, resp)
-	       {
-				var jsonObj = { count: resp.count };
-				outStream.send(JSON.stringify(jsonObj));
-	       }
-	 );
+	client.count(clientParams, function(err, resp)
+	{
+		if (err)
+		{
+			console.log(err);
+			console.log(err.stack);
+		}
+		else
+		{
+			var jsonObj = {
+				count : resp.count
+			};
+			outStream.send(JSON.stringify(jsonObj));
+		}
+	});
 }
 
 /**
- * Use Elasticsearch's scroll and scan api to
- * retrieve desired number of records.
+ * Use Elasticsearch's scroll and scan api to retrieve desired number of
+ * records.
  * 
- * Convert records to csv and pipe them to
- * the designated target stream.
+ * Convert records to csv and pipe them to the designated target stream.
  * 
  * @param clientParams { }
  * @param howMany -
- *            number of records to fetch
+ *          number of records to fetch
  * @param outStream -
- *            target to send the results to
+ *          target to send the results to
  */
 function _doScroll(clientParams, howMany, outStream)
 {
@@ -184,7 +193,8 @@ function _doScroll(clientParams, howMany, outStream)
 				scrollId : resp._scroll_id,
 				scroll : es_cfg.scroll_duration
 			}, getMoreUntilDone);
-		} else
+		}
+		else
 		{
 			writer.end();
 			return;
@@ -192,13 +202,9 @@ function _doScroll(clientParams, howMany, outStream)
 	});
 } // end of _doScroll()
 
-
-
-
 /**
- * Use _doScroll() to snag data
- * and pipe it in CSV format into stream passed
- * as part of metaParams.
+ * Use _doScroll() to snag data and pipe it in CSV format into stream passed as
+ * part of metaParams.
  */
 exports.getCSV = function(metaParams)
 {
@@ -219,7 +225,6 @@ exports.getCSV = function(metaParams)
 exports.getCount = function(metaParams)
 {
 	var clientParams = buildClientParams(metaParams);
-	var howMany = metaParams.how_many || 1000;
 	var outStream = metaParams.out_stream;
 	// initialize output stream -- tell browser
 	// what we're going to send:
