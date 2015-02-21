@@ -143,16 +143,16 @@ function _doScroll(clientParams, howMany, outStream)
 		host : es_cfg.host + ':' + es_cfg.port
 	});
 	var running_total = 0;
-	var csvWriter = require('csv-write-stream');
-	// csvWriter needs an array of strings, not a comma-delimited string
-	var fieldArray = clientParams.fields.split(',');
-	var writer = csvWriter({
-		headers : fieldArray
-	});
-	writer.pipe(outStream).on('error', function(e)
-	{
-		console.log("Error: " + e)
-	});
+	// var csvWriter = require('csv-write-stream');
+	// // csvWriter needs an array of strings, not a comma-delimited string
+	// var fieldArray = clientParams.fields.split(',');
+	// var writer = csvWriter({
+	// headers : fieldArray
+	// });
+	// writer.pipe(outStream).on('error', function(e)
+	// {
+	// console.log("Error: " + e)
+	// });
 
 	// If number of records we're requesting is less than
 	// chunk size, set clientParams.size to number of records.
@@ -160,13 +160,48 @@ function _doScroll(clientParams, howMany, outStream)
 	clientParams.size = Math.min(howMany, es_cfg.chunk_size);
 
 	clientParams.scroll = es_cfg.scroll_duration;
+
+	var writer = null;
 	client.search(clientParams, function getMoreUntilDone(err, resp)
 	{
-		if ((!resp.hits) || (!resp.hits.hits))
+		var grand_total = 0;
+		if (resp.hits && resp.hits.hits)
 		{
+			grand_total = resp.hits.total;
+		}
+		if (grand_total === 0)
+		{
+			// if no results, send back status 204:
+			var j = JSON.stringify({
+				message : 'Query returned no records'
+			});
+			outStream.writeHead(204, {
+				'Content-Length' : j.length,
+				'Content-Type' : 'application/json'
+			});
+			outStream.write(j);
+			outStream.end();
 			return;
 		}
-		var grand_total = resp.hits.total;
+		// We have results to send back:
+
+		if (!writer)
+		{
+			// Otherwise, set up outStream to receive CSV content:
+			outStream.setHeader('Content-Type', 'text/csv');
+			outStream.setHeader('Content-disposition',
+					'attachment;filename=query_result.csv');
+			var csvWriter = require('csv-write-stream');
+			// csvWriter needs an array of strings, not a comma-delimited string
+			var fieldArray = clientParams.fields.split(',');
+			writer = csvWriter({
+				headers : fieldArray
+			});
+			writer.pipe(outStream).on('error', function(e)
+			{
+				console.log("Error: " + e)
+			});
+		}
 		resp.hits.hits.every(function(hit)
 		{
 			// If the query specified fields, then the actual data for each
@@ -213,9 +248,9 @@ exports.getCSV = function(metaParams)
 	var outStream = metaParams.out_stream;
 	// initialize output stream -- tell browser
 	// what we're going to send:
-	outStream.setHeader('Content-Type', 'text/csv');
-	outStream.setHeader('Content-disposition',
-			'attachment;filename=query_result.csv');
+	// outStream.setHeader('Content-Type', 'text/csv');
+	// outStream.setHeader('Content-disposition',
+	// 'attachment;filename=query_result.csv');
 	_doScroll(clientParams, howMany, outStream);
 };
 

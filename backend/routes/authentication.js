@@ -58,9 +58,9 @@ exports.localUpdate = function(req, res) {
     function updateUser(callback) {
 		if(user) {
 			user.updateAttributes({
-				// Updating "role" is an Admin function only.
 				username: req.body.username,
 				email_address: req.body.email_address,
+				role: req.body.role,
 			})
 			.success(function() {
 				return res.json({ redirect: '/user/update' });

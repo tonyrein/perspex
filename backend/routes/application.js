@@ -116,13 +116,12 @@ exports.help = function(req, res) {
 	});
 };
 
-exports.doDataPages = function(req, res)
+exports.buildQueryPage = function(req,res)
 {
 	// req.path holds the path, but it includes the initial '/.'
 	// res.render wants the path without that initial slash.
-	var dataPagePath = req.path.slice(1);
-	res.render(dataPagePath, {
-		title : 'Perspex Data Pages',
+	res.render('data/build_query', {
+		title : 'Build Data Query',
 		nav_class : 'navbar-login',
 		nav_links : [ {
 			title : 'Home',

@@ -348,6 +348,15 @@ var QPProcessor = {
 		return paramString;
 	},
 
+	// TODO;
+	//	change this so that it assembles the request URL and then
+	//		sends request to URL asking for headers only. If the
+	//		returned status code is 204 (no content) display alert
+	//		telling user that this query returns no records.
+	//		If the status code is an error, display an error alert.
+	//		Otherwise, redirect to URL so that browser will prompt
+	//		for saving CSV file.
+	//	
 	getCSV : function()
 	{
 		var assembly = QPProcessor.assembleParameters();
@@ -358,28 +367,11 @@ var QPProcessor = {
 		}
 		var ps = QPProcessor.buildParameterString(assembly);
 		var query_url = 'http://' + window.location.host
-		 + '/non_ui/get_data?doc_type=' + assembly.doc_type + ps;
+		 + '/data/get_csv?doc_type=' + assembly.doc_type + ps;
 		 alert("URL: " + query_url);
 		 window.location = query_url;
 	},
 
-	// // Gather values of the form controls and assemble a query URL, then go to
-	// // that url..
-	// getCSV : function() {
-	// var assembly = QPProcessor.assembleParameters();
-	// if (!assembly.doc_type) {
-	// alert('Invalid document type selected. Please try again.');
-	// return;
-	// }
-	//
-	// // TODO: Sanitize input!
-	// var query_url = 'http://' + window.location.host
-	// + '/non_ui/get_data?doc_type=' + assembly.doc_type;
-	//
-	// query_url += QPProcessor.buildParameterString(assembly);
-	// alert("URL: " + query_url);
-	// window.location = query_url;
-	// },
 
 	// Should result in tabular display in a new page.
 	// getTabularData: function() { QPProcessor.getData('TABLE'); },
@@ -397,7 +389,7 @@ var QPProcessor = {
 		}
 
 		// TODO: Sanitize input!
-		var queryUrl = 'http://' + window.location.host + '/non_ui/get_count';
+		var queryUrl = 'http://' + window.location.host + '/data/get_count';
 		// var queryString = QPProcessor.buildParameterString(assembly);
 
 		$.ajax({
