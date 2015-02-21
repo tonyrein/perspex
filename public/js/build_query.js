@@ -332,11 +332,13 @@ var QPProcessor = {
 		{
 			paramString += '&fields=' + assembly.field_list;
 		}
-		if (assembly.date_params.start_date && assembly.date_params.start_date.length > 0)
+		if (assembly.date_params.start_date
+				&& assembly.date_params.start_date.length > 0)
 		{
 			paramString += '&start_date=' + assembly.date_params.start_date;
 		}
-		if (assembly.date_params.end_date && assembly.date_params.end_date.length > 0)
+		if (assembly.date_params.end_date
+				&& assembly.date_params.end_date.length > 0)
 		{
 			paramString += '&end_date=' + assembly.date_params.end_date;
 		}
@@ -349,13 +351,13 @@ var QPProcessor = {
 	},
 
 	// TODO;
-	//	change this so that it assembles the request URL and then
-	//		sends request to URL asking for headers only. If the
-	//		returned status code is 204 (no content) display alert
-	//		telling user that this query returns no records.
-	//		If the status code is an error, display an error alert.
-	//		Otherwise, redirect to URL so that browser will prompt
-	//		for saving CSV file.
+	// change this so that it assembles the request URL and then
+	// sends request to URL asking for headers only. If the
+	// returned status code is 204 (no content) display alert
+	// telling user that this query returns no records.
+	// If the status code is an error, display an error alert.
+	// Otherwise, redirect to URL so that browser will prompt
+	// for saving CSV file.
 	//	
 	getCSV : function()
 	{
@@ -367,11 +369,10 @@ var QPProcessor = {
 		}
 		var ps = QPProcessor.buildParameterString(assembly);
 		var query_url = 'http://' + window.location.host
-		 + '/data/get_csv?doc_type=' + assembly.doc_type + ps;
-		 alert("URL: " + query_url);
-		 window.location = query_url;
+				+ '/data/get_csv?doc_type=' + assembly.doc_type + ps;
+		alert("URL: " + query_url);
+		window.location = query_url;
 	},
-
 
 	// Should result in tabular display in a new page.
 	// getTabularData: function() { QPProcessor.getData('TABLE'); },
@@ -392,24 +393,39 @@ var QPProcessor = {
 		var queryUrl = 'http://' + window.location.host + '/data/get_count';
 		// var queryString = QPProcessor.buildParameterString(assembly);
 
+//		$ajax.Setup({cache: false});
 		$.ajax({
-			url : queryUrl,
-			type : 'GET',
-			dataType : 'JSON',
-			data : assembly,
-			success : function(json)
-			{
-				alert('Query would return ' + json.count + ' records.');
-			},
-			error : function(xhr, status, errorThrown)
-			{
-				alert("Sorry, there was a problem!");
-				console.log("Error: " + errorThrown);
-				console.log("Status: " + status);
-				console.dir(xhr);
-			},
+					url : queryUrl,
+					type : 'GET',
+					dataType : 'JSON',
+					data : assembly,
+					success : function(json)
+					{
+						if (json.count)
+						{
+							alert('Query would return ' + json.count + ' records.');
+						}
+						else
+						{
+							if (json.error)
+							{
+								alert(json.error);
+							}
+							else
+							{
+								alert("Unknown error -- could not get count. Please contact the system administrator.");
+							}
+						}
+					},
+					error : function(xhr, status, errorThrown)
+					{
+						alert("Sorry, there was a problem!");
+						console.log("Error: " + errorThrown);
+						console.log("Status: " + status);
+						console.dir(xhr);
+					},
 
-		});
+				});
 	},
 
 }; // end of var QPProcessor = ...

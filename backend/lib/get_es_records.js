@@ -1,4 +1,26 @@
 /**
+ * "Factory" to create a csvwriter tied to a particular writable
+ *  stream, using fields as its header.
+ */
+function makeCSVWriter(outStream, fields)
+{
+	// Otherwise, set up outStream to receive CSV content:
+	outStream.setHeader('Content-Type', 'text/csv');
+	outStream.setHeader('Content-disposition',
+			'attachment;filename=query_result.csv');
+	var csvWriter = require('csv-write-stream');
+	// csvWriter needs an array of strings, not a comma-delimited string
+	var fieldArray = fields.split(',');
+	var writer = csvWriter({
+		headers : fieldArray
+	});
+	writer.pipe(outStream).on('error', function(e)
+	{
+		console.log("Error: " + e)
+	});
+	return writer;
+}
+/**
  * Constructs an object suitable for using as the "body" parameter of an
  * Elasticsearch call.
  */
@@ -100,26 +122,37 @@ function buildClientParams(metaParams)
 function _retrieveCountAsJSON(clientParams, outStream)
 {
 	var es_cfg = require('./config').config.es;
+	// initialize output stream -- tell browser
+	// what we're going to send:
+	outStream.setHeader('Content-Type', 'application/json');
 
 	var elasticsearch = require('elasticsearch');
 	var client = new elasticsearch.Client({
 		host : es_cfg.host + ':' + es_cfg.port
 	});
-	client.count(clientParams, function(err, resp)
-	{
-		if (err)
-		{
-			console.log(err);
-			console.log(err.stack);
-		}
-		else
-		{
-			var jsonObj = {
-				count : resp.count
-			};
-			outStream.send(JSON.stringify(jsonObj));
-		}
-	});
+	client
+			.count(
+					clientParams,
+					function(err, resp)
+					{
+						var jsonObj = {};
+						if (err)
+						{
+							console.log(err);
+							console.log(err.stack);
+							jsonObj = {
+								error : 'Database server responded with an error. Please ask the system administrator to investigate.'
+							};
+						}
+						else
+						{
+							jsonObj = {
+								count : resp.count
+							};
+
+						}
+						outStream.send(JSON.stringify(jsonObj));
+					});
 }
 
 /**
@@ -143,16 +176,6 @@ function _doScroll(clientParams, howMany, outStream)
 		host : es_cfg.host + ':' + es_cfg.port
 	});
 	var running_total = 0;
-	// var csvWriter = require('csv-write-stream');
-	// // csvWriter needs an array of strings, not a comma-delimited string
-	// var fieldArray = clientParams.fields.split(',');
-	// var writer = csvWriter({
-	// headers : fieldArray
-	// });
-	// writer.pipe(outStream).on('error', function(e)
-	// {
-	// console.log("Error: " + e)
-	// });
 
 	// If number of records we're requesting is less than
 	// chunk size, set clientParams.size to number of records.
@@ -164,8 +187,18 @@ function _doScroll(clientParams, howMany, outStream)
 	var writer = null;
 	client.search(clientParams, function getMoreUntilDone(err, resp)
 	{
+		if (err)
+		{
+			console.log(err);
+			console.log(err.stack);
+			outStream.setHeader('Content-Type', 'text/html');
+			outStream.write('<h2>Database server responded with an error. Please ask the system administrator to investigate.' +
+					'</h2><hr/>');
+			outStream.end();
+			return;
+		}
 		var grand_total = 0;
-		if (resp.hits && resp.hits.hits)
+		if (resp && resp.hits && resp.hits.hits)
 		{
 			grand_total = resp.hits.total;
 		}
@@ -187,29 +220,16 @@ function _doScroll(clientParams, howMany, outStream)
 
 		if (!writer)
 		{
-			// Otherwise, set up outStream to receive CSV content:
-			outStream.setHeader('Content-Type', 'text/csv');
-			outStream.setHeader('Content-disposition',
-					'attachment;filename=query_result.csv');
-			var csvWriter = require('csv-write-stream');
-			// csvWriter needs an array of strings, not a comma-delimited string
-			var fieldArray = clientParams.fields.split(',');
-			writer = csvWriter({
-				headers : fieldArray
-			});
-			writer.pipe(outStream).on('error', function(e)
-			{
-				console.log("Error: " + e)
-			});
+			// Create the writer with fields as header, link it to outStream,
+			// and initialize it to accept text/csv.
+			writer = makeCSVWriter(outStream, clientParams.fields);
 		}
 		resp.hits.hits.every(function(hit)
 		{
 			// If the query specified fields, then the actual data for each
 			// record will be in hit.fields. Otherwise, it will be in
-			// hit._source.
-			// Why? Who knows?
-			// Since we always specify fields explicitly, we will
-			// use fields.
+			// hit._source. Why? Who knows?
+			// Since we always specify fields explicitly, we will use fields.
 			// 
 			writer.write(hit.fields);
 			running_total++;
@@ -246,11 +266,6 @@ exports.getCSV = function(metaParams)
 	var clientParams = buildClientParams(metaParams);
 	var howMany = metaParams.how_many || 1000;
 	var outStream = metaParams.out_stream;
-	// initialize output stream -- tell browser
-	// what we're going to send:
-	// outStream.setHeader('Content-Type', 'text/csv');
-	// outStream.setHeader('Content-disposition',
-	// 'attachment;filename=query_result.csv');
 	_doScroll(clientParams, howMany, outStream);
 };
 
@@ -261,8 +276,8 @@ exports.getCount = function(metaParams)
 {
 	var clientParams = buildClientParams(metaParams);
 	var outStream = metaParams.out_stream;
-	// initialize output stream -- tell browser
-	// what we're going to send:
-	outStream.setHeader('Content-Type', 'application/json');
+//	// initialize output stream -- tell browser
+//	// what we're going to send:
+//	outStream.setHeader('Content-Type', 'application/json');
 	_retrieveCountAsJSON(clientParams, outStream)
 }
