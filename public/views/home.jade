@@ -2,13 +2,46 @@ extends layout
 
 
 block content
-	.hero(class="#{nav_class}")
+	div(class="#{nav_class}")
 	.container
 		h2 Welcome to Perspex.
 		h3 What would you like to do?
-			ul
-				li <a href="#">Administer the system</a>
-				li <a href="/data/build_query">See my data!</a>
+		ul
+			li <a href="/admin/admin_home" class="btn btn-primary btn-lg"">Administer the system</a>
+			br
+			li <a href="/data/build_query" class="btn btn-primary btn-lg"">See my data!</a>
+			br
+			li <a data-toggle="modal" href="http://localhost/kibana" target="_blank" class="btn btn-primary btn-lg">View Kibana Dashboard (New Window)</a>
+			br
+			li <a data-toggle="modal" href="#kibanaModal" class="btn btn-primary btn-lg">View Kibana Dashboard (Popup)</a>
+			
+		//- Modal to view Kibana.
+		div(id="kibanaModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true")
+			div.modal-dialog.custom-responsive-modal-class
+				div.modal-content
+					div.modal-header
+						button(type="button" class="close" data-dismiss="modal" aria-hidden="true") &times;
+						h4.modal-title Title of the Modal
+					div.modal-body
+						h4 Body goes here
+						iframe(src="http://localhost/kibana" id="kibanaIframe" frameborder="0")
+					div.modal-footer
+						button(type="button" class="btn btn-default" data-dismiss="modal") Close
+
+script(src='/js/open_kibana.js')
+		
+		//div(id="kibanaModal" class="modal hide fade" tabindex="-1" role="dialog")
+		//	div.modal-header
+		///		button(type="button" class="close" data-dismiss="modal")
+		//		| x
+		//		h3 Kibana Data Dashboard
+		//	div.modal-body
+		//		iframe(src="" style="zoom:0.60" id="kibanaIframe" frameborder="0")
+		//	div.modal-footer
+		//		button(class="btn" data-dismiss="modal")
+		//		| OK
+		//script(src='/js/open_kibana.js')
+		
   
   
   

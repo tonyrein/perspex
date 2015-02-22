@@ -2,6 +2,7 @@ extends layout
 
 block content
   .container(style="margin-top:100px")
+    div(class="#{nav_class}")
     .jumbotron
       h1 There's been a problem fulfilling your request. Here is the text of the error message:
       h2 #{error_message}

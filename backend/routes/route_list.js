@@ -153,7 +153,7 @@ exports.addRoutes = function(app)
 		r = perspexGETRoutes[i];
 		if (r.admin)
 		{
-			app.get(r.page_path, isAuthenticated, isInRole('ADMIN'), r.method);
+			app.get(r.page_path, isAuthenticated, limitToAdmin, r.method);
 			continue;
 		}
 		if (r.auth)
@@ -168,7 +168,7 @@ exports.addRoutes = function(app)
 		r = perspexPOSTRoutes[i];
 		if (r.admin)
 		{
-			app.post(r.page_path, isAuthenticated, isInRole('ADMIN'), r.method);
+			app.post(r.page_path, isAuthenticated, limitToAdmin, r.method);
 			continue;
 		}
 		if (r.auth)
