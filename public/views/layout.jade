@@ -21,6 +21,9 @@ html
       - each script in coffeescript 
         script(src='#{script.js}') 
   body
+    noscript
+      div
+        h3 You must enable Javascript to use Perspex. Please enable Javascript and then reload this page.
     if !hide_navbar
       include navigation
     #wrap

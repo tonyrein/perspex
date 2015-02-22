@@ -31,193 +31,237 @@
         hide_navbar:true
  */
 
-var publicNavLinks = [
-                    { title: 'Home', href: '/home'},
-                    { title: 'Log Out'  , href: '/logout' },
-                    ];
+var publicNavLinks = [ {
+	title : 'Home',
+	href : '/home'
+}, {
+	title : 'Log Out',
+	href : '/logout'
+}, ];
 
-var userNavLinks = [
-                 { title: 'Help'  , href: '/help' },
-                 { title: 'Data'  , href: '/data/build_query' },
-                 ];
+var userNavLinks = [ {
+	title : 'Help',
+	href : '/help'
+}, {
+	title : 'Data',
+	href : '/data/build_query'
+}, ];
 
-var adminNavLinks = [
-                     { title: 'Admin'  , href: '/admin' },
-                     ];
+var adminNavLinks = [ {
+	title : 'Admin',
+	href : '/admin/admin_home'
+}, ];
 
-var isAdmin = require('./route_list').isInRole('ADMIN');
-var isLoggedIn = require('./route_list').isAuthenticated;
-
-exports.home = function(req, res) {
-	var navLinks = publicNavLinks;
-	if (isLoggedIn()) {
-		navLinks.push.apply(navLinks, userNavLinks);
-		if (isAdmin())
-			{
-				navLinks.push.apply(navLinks, adminNavLinks);
-			}
+exports.home = function(req, res)
+{
+	var navLinks = [];
+	if (req.user)
+	{
+		navLinks.concat(userNavLinks);
+		if (req.user.role === 'ADMIN')
+		{
+			navLinks = publicNavLinks.concat(userNavLinks).concat(adminNavLinks);
+		}
+		else
+		{
+			navLinks = publicNavLinks.concat(userNavLinks);
+		}
+	}
+	else
+	{
+		navLinks = publicNavLinks;
 	}
 	res.render('home', {
 		title : 'Home',
 		nav_class : 'navbar-home',
-		nav_links: navLinks,
-//		nav_links : [ {
-//			title : 'Home',
-//			href : '/home'
-//		}, {
-//			title : 'Setup',
-//			href : '/admin/setup'
-//		}, {
-//			title : 'Update User',
-//			href : '/admin/update_user'
-//		}, {
-//			title : 'Help',
-//			href : '/help'
-//		}, {
-//			title : 'Logout',
-//			href : '/logout'
-//		} ]
+		nav_links : navLinks,
+		user: req.user,
 	});
 };
 
-exports.setup = function(req, res) {
+exports.setup = function(req, res)
+{
+	var navLinks = [];
+	if (req.user)
+	{
+		navLinks.concat(userNavLinks);
+		if (req.user.role === 'ADMIN')
+		{
+			navLinks = publicNavLinks.concat(userNavLinks).concat(adminNavLinks);
+		}
+		else
+		{
+			navLinks = publicNavLinks.concat(userNavLinks);
+		}
+	}
+	else
+	{
+		navLinks = publicNavLinks;
+	}
+
 	res.render('setup', {
 		title : 'Setup',
 		nav_class : 'navbar-setup',
-		nav_links : [ {
-			title : 'Home',
-			href : '/home'
-		}, {
-			title : 'Setup',
-			href : '/setup'
-		}, {
-			title : 'Update User',
-			href : '/admin/update_user'
-		}, {
-			title : 'Help',
-			href : '/help'
-		}, {
-			title : 'Logout',
-			href : '/logout'
-		} ]
+		nav_links : navLinks,
 	});
 };
 
-exports.login = function(req, res) {
+exports.login = function(req, res)
+{
+	var navLinks = [];
+	if (req.user)
+	{
+		navLinks.concat(userNavLinks);
+		if (req.user.role === 'ADMIN')
+		{
+			navLinks = publicNavLinks.concat(userNavLinks).concat(adminNavLinks);
+		}
+		else
+		{
+			navLinks = publicNavLinks.concat(userNavLinks);
+		}
+	}
+	else
+	{
+		navLinks = publicNavLinks;
+	}
+
 	res.render('login', {
 		title : 'Login',
 		nav_class : 'navbar-login',
-		nav_links : [ {
-			title : 'Home',
-			href : '/home'
-		}, {
-			title : 'Create User',
-			href : '/create'
-		}, {
-			title : 'Help',
-			href : '/help'
-		}, ],
+		nav_links : navLinks,
 		user : req.user
 	});
 };
 
-exports.help = function(req, res) {
+exports.help = function(req, res)
+{
+	var navLinks = [];
+	if (req.user)
+	{
+		navLinks.concat(userNavLinks);
+		if (req.user.role === 'ADMIN')
+		{
+			navLinks = publicNavLinks.concat(userNavLinks).concat(adminNavLinks);
+		}
+		else
+		{
+			navLinks = publicNavLinks.concat(userNavLinks);
+		}
+	}
+	else
+	{
+		navLinks = publicNavLinks;
+	}
 	res.render('help', {
 		title : 'help',
 		nav_class : 'navbar-login',
-		nav_links : [ {
-			title : 'Home',
-			href : '/home'
-		}, {
-			title : 'Create User',
-			href : '/create'
-		}, {
-			title : 'Help',
-			href : '/help'
-		}, {
-			title : 'Logout',
-			href : '/logout'
-		} ],
+		nav_links : navLinks,
 		user : req.user
 	});
 };
 
-exports.buildQueryPage = function(req,res)
+exports.buildQueryPage = function(req, res)
 {
-	// req.path holds the path, but it includes the initial '/.'
-	// res.render wants the path without that initial slash.
+	var navLinks = [];
+	if (req.user)
+	{
+		navLinks.concat(userNavLinks);
+		if (req.user.role === 'ADMIN')
+		{
+			navLinks = publicNavLinks.concat(userNavLinks).concat(adminNavLinks);
+		}
+		else
+		{
+			navLinks = publicNavLinks.concat(userNavLinks);
+		}
+	}
+	else
+	{
+		navLinks = publicNavLinks;
+	}
 	res.render('data/build_query', {
 		title : 'Build Data Query',
 		nav_class : 'navbar-login',
-		nav_links : [ {
-			title : 'Home',
-			href : '/home'
-		}, {
-			title : 'Create User',
-			href : '/create'
-		}, {
-			title : 'Help',
-			href : '/help'
-		}, {
-			title : 'Logout',
-			href : '/logout'
-		} ],
+		nav_links : navLinks,
 		user : req.user
 	});
-	
+
 };
-exports.createUser = function(req, res) {
+exports.createUser = function(req, res)
+{
+	var navLinks = [];
+	if (req.user)
+	{
+		navLinks.concat(userNavLinks);
+		if (req.user.role === 'ADMIN')
+		{
+			navLinks = publicNavLinks.concat(userNavLinks).concat(adminNavLinks);
+		}
+		else
+		{
+			navLinks = publicNavLinks.concat(userNavLinks);
+		}
+	}
+	else
+	{
+		navLinks = publicNavLinks;
+	}
+
 	res.render('create', {
 		title : 'Create User',
 		coffeescript : [ {
 			js : '/js/postHelper.js'
 		} ],
-		nav_links : [ {
-			title : 'Login',
-			href : '/login'
-		}, {
-			title : 'Help',
-			href : '/help'
-		}, ]
+		nav_links : navLinks,
 	});
 };
 
-exports.updateUser = function(req, res) {
+exports.updateUser = function(req, res)
+{
+	var navLinks = [];
+	if (req.user)
+	{
+		navLinks.concat(userNavLinks);
+		if (req.user.role === 'ADMIN')
+		{
+			navLinks = publicNavLinks.concat(userNavLinks).concat(adminNavLinks);
+		}
+		else
+		{
+			navLinks = publicNavLinks.concat(userNavLinks);
+		}
+	}
+	else
+	{
+		navLinks = publicNavLinks;
+	}
 	res.render('update', {
 		title : 'Update User',
 		coffeescript : [ {
 			js : '/js/postHelper.js'
 		} ],
-		nav_links : [ {
-			title : 'Home',
-			href : '/home'
-		}, {
-			title : 'Setup',
-			href : '/setup'
-		}, {
-			title : 'Update User',
-			href : '/admin/update_user'
-		}, {
-			title : 'Help',
-			href : '/help'
-		}],
+		nav_links : navLinks,
 		user : req.user
 	});
 };
 
-exports.adminHome = function(req, res) {
-	res.render('/admin/admin_home', {
+exports.adminHome = function(req, res)
+{
+	res.render('admin/admin_home', {
 		title : 'Perspex System and User Administration',
-		nav_links: publicNavLinks.concat(userNavLinks, adminNavLinks),
+		nav_links : publicNavLinks.concat(userNavLinks, adminNavLinks),
 	});
 };
 
-exports.logout = function(req, res) {
+exports.logout = function(req, res)
+{
 	req.logout();
 	res.redirect('/');
 };
 
-exports.catchall = function(req, res) {
+exports.catchall = function(req, res)
+{
 	res.render('404', {
 		title : '404',
 		hide_navbar : true
