@@ -119,31 +119,31 @@ function isAuthenticated(req, resp, next)
 // For example:
 // app.get('/admin/dangerous_stuff',
 // isAuthenticated,
-// isInRole('ADMIN'),
+// limitToAdmin,
 // function(req, resp
 // { ... }
 // );
 
-function limitToAdmin()
+function limitToAdmin(req, resp, next)
 {
-	return function(req, resp, next)
-	{
-		if (isAdmin())
-			{
-				return next();
-			}
-			else
-			{
-				resp.redirect('/login');
-			}
-	};
+	if (isAdmin(req))
+		{
+			return next();
+		}
+	else
+		{
+		resp.redirect('/login');
+		}
 }
+	
 
-exports.isAdmin = function()
+function isAdmin(req)
 {
 	return (req.user && req.user.role === 'ADMIN');
 }
-exports.isAuthenticated = isAuthenticated
+
+exports.isAuthenticated = isAuthenticated;
+exports.isAdmin = isAdmin;
 exports.limitToAdmin = limitToAdmin;
 
 exports.addRoutes = function(app)
