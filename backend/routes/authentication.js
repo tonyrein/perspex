@@ -4,30 +4,6 @@ User 	 = require('../db/sql').User,
 async	 = require('async'),
 passport = require('passport');
 
-exports.isAuthenticated = function(req, resp, next) {
-  if (req.user) { return next(); }
-  resp.redirect('/login');
-};
-
-
-// Use this to verify that logged-in user has
-// sufficient privileges for desired operation.
-// For example:
-//	app.get('/admin/dangerous_stuff',
-//		isAuthenticated,
-//		isInRole('ADMIN'),
-//		function(req, resp
-//		{ ... }
-//	);
-
-exports.isInRole = function(role)
-{
-	return function(req, resp, next)
-	{
-		if (req.user && req.user.role === role) { next(); }
-		resp.redirect('/login');
-	};
-};
 //local authentication
 exports.localCreate = function(req, res) {
 	// set role to "user" -- creating an admin

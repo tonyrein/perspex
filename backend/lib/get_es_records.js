@@ -191,10 +191,13 @@ function _doScroll(clientParams, howMany, outStream)
 		{
 			console.log(err);
 			console.log(err.stack);
-			outStream.setHeader('Content-Type', 'text/html');
-			outStream.write('<h2>Database server responded with an error. Please ask the system administrator to investigate.' +
-					'</h2><hr/>');
-			outStream.end();
+			var goToError = require('./utils').goToErrorPage;
+			goToError(outStream,
+					'Database server responded with an error. Please ask the system administrator to investigate.');
+//			outStream.setHeader('Content-Type', 'text/html');
+//			outStream.write('<h2>Database server responded with an error. Please ask the system administrator to investigate.' +
+//					'</h2><hr/>');
+//			outStream.end();
 			return;
 		}
 		var grand_total = 0;

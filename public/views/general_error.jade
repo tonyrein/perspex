@@ -1,0 +1,10 @@
+extends layout
+
+block content
+  .container(style="margin-top:100px")
+    .jumbotron
+      h1 There's been a problem fulfilling your request. Here is the text of the error message:
+      h2 #{error_message}
+      hr
+      a.btn.btn-lg.btn-primary(href="/home" role="button") Home »
+      

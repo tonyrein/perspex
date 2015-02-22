@@ -34,16 +34,12 @@ var QPProcessor = {
 	// event handlers
 	selChangeRecordType : function(ev)
 	{
-		// ev.preventDefault();
 		currentRecordType = ev.target.value;
 		QPProcessor.setupRecordTypeOptions(currentRecordType);
 	},
 
 	queryMethodChanged : function(ev)
 	{
-		// ev.preventDefault();
-		// alert(ev.target.dataset.val);
-		// ev.target.prop('checked', true);
 		currentQueryMethod = ev.target.dataset.val;
 		QPProcessor.setupQueryMethodOptions(currentQueryMethod);
 	},
@@ -294,7 +290,6 @@ var QPProcessor = {
 	assembleParameters : function()
 	{
 		var assembly = {};
-		// assembly.query_params = QPProcessor.gatherQueryParams();
 		assembly.num_to_fetch = QPProcessor.getQuantity();
 		assembly.date_params = QPProcessor.getDateRange();
 		assembly.field_list = QPProcessor.getFieldList();
@@ -391,9 +386,6 @@ var QPProcessor = {
 
 		// TODO: Sanitize input!
 		var queryUrl = 'http://' + window.location.host + '/data/get_count';
-		// var queryString = QPProcessor.buildParameterString(assembly);
-
-//		$ajax.Setup({cache: false});
 		$.ajax({
 					url : queryUrl,
 					type : 'GET',

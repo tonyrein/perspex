@@ -20,4 +20,29 @@ exports.stripDoubleQuotes = function(str)
 	return str;
 }
 
-
+/**
+ * Render the error message template page
+ * with the given message to the given stream.
+ */
+exports.goToErrorPage = function(res, message)
+{
+	res.setHeader('Content-Type', 'text/html');
+	res.render('general_error', {
+		title : 'Error',
+		error_message: message,
+		nav_class : 'navbar-login',
+		nav_links : [ {
+			title : 'Home',
+			href : '/home'
+		}, {
+			title : 'Create User',
+			href : '/create'
+		}, {
+			title : 'Help',
+			href : '/help'
+		}, {
+			title : 'Logout',
+			href : '/logout'
+		} ],
+	});
+}

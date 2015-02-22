@@ -10,7 +10,7 @@
     nav_links: [
       { title: 'Home', href: '/home'},
       { title: 'Setup', href: '/setup'},
-      { title: 'Update User', href: '/user/update'},
+      { title: 'Update User', href: '/admin/update_user'},
       { title: 'Logout', href: '/logout'}
     ]
  * 
@@ -31,26 +31,52 @@
         hide_navbar:true
  */
 
+var publicNavLinks = [
+                    { title: 'Home', href: '/home'},
+                    { title: 'Log Out'  , href: '/logout' },
+                    ];
+
+var userNavLinks = [
+                 { title: 'Help'  , href: '/help' },
+                 { title: 'Data'  , href: '/data/build_query' },
+                 ];
+
+var adminNavLinks = [
+                     { title: 'Admin'  , href: '/admin' },
+                     ];
+
+var isAdmin = require('./route_list').isInRole('ADMIN');
+var isLoggedIn = require('./route_list').isAuthenticated;
+
 exports.home = function(req, res) {
+	var navLinks = publicNavLinks;
+	if (isLoggedIn()) {
+		navLinks.push.apply(navLinks, userNavLinks);
+		if (isAdmin())
+			{
+				navLinks.push.apply(navLinks, adminNavLinks);
+			}
+	}
 	res.render('home', {
 		title : 'Home',
 		nav_class : 'navbar-home',
-		nav_links : [ {
-			title : 'Home',
-			href : '/home'
-		}, {
-			title : 'Setup',
-			href : '/setup'
-		}, {
-			title : 'Update User',
-			href : '/user/update'
-		}, {
-			title : 'Help',
-			href : '/help'
-		}, {
-			title : 'Logout',
-			href : '/logout'
-		} ]
+		nav_links: navLinks,
+//		nav_links : [ {
+//			title : 'Home',
+//			href : '/home'
+//		}, {
+//			title : 'Setup',
+//			href : '/admin/setup'
+//		}, {
+//			title : 'Update User',
+//			href : '/admin/update_user'
+//		}, {
+//			title : 'Help',
+//			href : '/help'
+//		}, {
+//			title : 'Logout',
+//			href : '/logout'
+//		} ]
 	});
 };
 
@@ -66,7 +92,7 @@ exports.setup = function(req, res) {
 			href : '/setup'
 		}, {
 			title : 'Update User',
-			href : '/user/update'
+			href : '/admin/update_user'
 		}, {
 			title : 'Help',
 			href : '/help'
@@ -170,15 +196,19 @@ exports.updateUser = function(req, res) {
 			href : '/setup'
 		}, {
 			title : 'Update User',
-			href : '/user/update'
+			href : '/admin/update_user'
 		}, {
 			title : 'Help',
 			href : '/help'
-		}, {
-			title : 'Logout',
-			href : '/logout'
-		} ],
+		}],
 		user : req.user
+	});
+};
+
+exports.adminHome = function(req, res) {
+	res.render('/admin/admin_home', {
+		title : 'Perspex System and User Administration',
+		nav_links: publicNavLinks.concat(userNavLinks, adminNavLinks),
 	});
 };
 
