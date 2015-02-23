@@ -145,7 +145,7 @@ exports.updateUser = function(req, res)
 
 exports.adminHome = function(req, res)
 {
-	res.render('/admin/admin_home', {
+	res.render('admin/admin_home', {
 		title : 'Perspex System and User Administration',
 		nav_links : linksForUser(req),
 	});
