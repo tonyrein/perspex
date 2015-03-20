@@ -3,6 +3,7 @@ var app 		= express();
 var config 		= require('./config/config').configure(app);
 var https	    = require('https');
 var http        = require('http');
+var app_routes = require('./backend/routes/route_list').app_routes;
 
 var route_list = require('./backend/routes/route_list');
 

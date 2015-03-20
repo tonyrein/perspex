@@ -1,33 +1,50 @@
-module.exports = function(){
+module.exports = function()
+{
 	var sqlite3 = require('sqlite3');
-	Sequelize = require('sequelize'),
+	Sequelize = require('sequelize'); // was a comma here?
 
-	/* Update database credentials here
-	 * based on your own system's configuration
+	/*
+	 * Update database credentials here based on your own system's configuration
 	 */
-	sql = {
-		'name':'perspex.db',
-		'user': 'NA',
-		'host': 'NA',
-		'password': 'NA',
-	};
 
-	sql.db = new sqlite3.Database(sql.name);
+	// Initially sql is null. If it's null, initialize it.
+	var sql;
+	if (!sql)
+	{
+		sql = {
+			'name' : 'perspex.db',
+			'user' : 'NA',
+			'host' : 'NA',
+			'password' : 'NA',
+		};
 
-	var sequelize = exports.sequelize = new Sequelize(sql.name, sql.user, sql.password,
-			{
-				dialect: 'sqlite',
-				storage: sql.name
-			});
- 
-	sequelize.authenticate().complete( function(err) {
-		if (err) {
-			new Error('backend/db/sql.js: unable to connect to the database:', err);
-		} 
-	});
+		sql.db = new sqlite3.Database(sql.name);
 
-	// include models here
-	sql.User = require('../models/user');
+		var sequelize = exports.sequelize = new Sequelize(sql.name, sql.user,
+				sql.password, {
+					dialect : 'sqlite',
+					storage : sql.name
+				});
 
+		sequelize.authenticate().complete(
+				function(err)
+				{
+					if (err)
+					{
+						new Error('backend/db/sql.js: unable to connect to the database:',
+								err);
+					}
+				});
+
+		// include models here
+		sql.User = require('../models/user');
+	}
 	return sql;
 }();
+
+/**
+ * Possibility: Add exports statement making User available. This will probably
+ * require moving the sql = {...} declaration to the top of the file, outside of
+ * a function.
+ * 
+ */

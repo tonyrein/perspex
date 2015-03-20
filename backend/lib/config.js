@@ -10,6 +10,7 @@ var es_scroll_duration = '30s';
 var env = 'development';
 var view_engine = 'jade';
 var views = __dirname + '/views';
+var User = require('../db/sql').User;
 
 var es_host = '', es_port = '';
 if ('development' == env)
@@ -18,7 +19,9 @@ if ('development' == env)
 	es_port = '9200';
 }
 
-exports.config = {
+
+
+var config = {
 	port : port,
 	es : {
 		index : es_index,
@@ -36,3 +39,8 @@ exports.config = {
 	view_engine : view_engine,
 	views : views,
 };
+
+
+User.count().then(function(res) { config.userCount = res; });
+
+module.exports.config = config;

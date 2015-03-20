@@ -3,9 +3,9 @@
  * call addRoutes() to set up routing.
  * 
  */
-app_routes 	= require('./application'),
-auth_routes	= require('./authentication');
-data_routes = require('./data');
+var app_routes 	= require('./application');
+var auth_routes	= require('./authentication');
+var data_routes = require('./data');
 
 var perspexGETRoutes = [
 // vert (appg.get, app.post...), page_path (regex string), auth required? (bool), admin required? (bool),
@@ -142,9 +142,12 @@ function isAdmin(req)
 	return (req.user && req.user.role === 'ADMIN');
 }
 
+// EXPORTS
 exports.isAuthenticated = isAuthenticated;
 exports.isAdmin = isAdmin;
 exports.limitToAdmin = limitToAdmin;
+exports.app_routes = app_routes;
+exports.auth_routes = auth_routes;
 
 exports.addRoutes = function(app)
 {
