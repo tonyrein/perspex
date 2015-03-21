@@ -365,7 +365,7 @@ var QPProcessor = {
 		var ps = QPProcessor.buildParameterString(assembly);
 		var query_url = 'http://' + window.location.host
 				+ '/data/get_csv?doc_type=' + assembly.doc_type + ps;
-		alert("URL: " + query_url);
+		//alert("URL: " + query_url);
 		window.location = query_url;
 	},
 

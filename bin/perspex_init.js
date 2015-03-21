@@ -14,18 +14,17 @@
 // set a global variable so that other
 // modules can find stuff:
 var path = require('path');
-global.appRoot = path.resolve('..');
+global.appRoot = path.resolve(__dirname + '/..');
 
-// next line should create database if it doesn't already exist.
-var User = require(appRoot + '/backend/db/sql').User;
+//// next line should create database if it doesn't already exist.
+//var User = require(appRoot + '/backend/db/sql').User;
 
 // minimist supplies command-line argument parsing.
 var argv = require('minimist')(process.argv.slice(2));
-var hashPassword = require(appRoot + '/backend/passport/passport').hashPassword;
 
 var showUsage = function()
 {
-	console.log("perspex_init is intended to initialize the Perspex");
+	console.log("\nperspex_init is intended to initialize the Perspex");
 	console.log("database prior to the first run of the Perspex web application.\n");
 	console.log("perspex_init will create the database, if it doesn't already exist,");
 	console.log("and create an administrative user with the name and password supplied");
@@ -39,17 +38,17 @@ var showUsage = function()
 };
 
 
- var warn_already_users = function()
- {
- console.log("\nERROR: The user database already contains at least one user.");
- console.log("Please start the Perspex Web app and use its administrative");
- console.log("pages to add, remove, or modify users' records.");
- console.log("\nIf you want to start from scratch, remove the Perspex users");
- console.log("database file and then run this program again. By default, that file");
- console.log("is located in the Perspex root directory \(the directory containing");
- console.log("the file 'perspex-app.js'\), although you may select another");
- console.log("file name or location by editing backend/lib/config.js.\n\n");
- };
+var warn_already_users = function()
+{
+	console.log("\nERROR: The user database already contains at least one user.");
+	console.log("Please start the Perspex Web app and use its administrative");
+	console.log("pages to add, remove, or modify users' records.");
+	console.log("\nIf you want to start from scratch, remove the Perspex users");
+	console.log("database file and then run this program again. By default, that file");
+	console.log("is located in the Perspex root directory \(the directory containing");
+	console.log("the file 'perspex-app.js'\), although you may select another");
+	console.log("file name or location by editing backend/lib/config.js.\n\n");
+};
 
 // MAIN
 
@@ -65,6 +64,13 @@ if ( (! argv.u) || (! argv.p) )
 	process.exit(1);
 }
 
+// Create the User model (connection to user database). As a
+// side affect, this will create the database if it's not alredy present.
+var User = require(appRoot + '/backend/db/sql').User;
+
+// Pull in hashPassword method from Passport setup module:
+var hashPassword = require(appRoot + '/backend/passport/passport').hashPassword;
+
 // Parameters OK -- we have a user name and password.
 // Next, make sure we're not overwriting a good user database:
 User.count().then(function(res)
@@ -76,42 +82,38 @@ User.count().then(function(res)
 				}
 			else
 				{
-					console.log("\nNew user database found or successfully created.");
-					console.log("Will now add user with specified name and password...\n");
+					console.log("\n\nNew user database found or successfully created.");
+					console.log("Will now add user with specified name and password...");
 					// first, hash the password
 					hashPassword(argv.p, function(err, hpwd)
 						{
 							// Now add a user to the database.
 							// hpwd contains hashed password
-							User.create( {
+							User.create({
 								username: argv.u,
 								role: 'ADMIN',
-								email_address: 'none@example.com', // email not used at present.
+								// email not used as of 2015-0321
+								email_address: 'none@example.com',
 								password: hpwd
 							}).success(function(User) {
-								console.log("Successfully created user " + argv.u);
-								console.log("with password " + argv.p);
+								console.log("\nSuccessfully created user " + argv.u);
+								console.log("with password " + argv.p + "\n");
 								process.exit(0);
 							}).
 							error(function(err){
 								console.log("ERROR: There was a problem creating the user:");
 								for (var k in err)
-									{
+								{
 									console.log(k + ": " + err[k]);
-									}
-								
+								}
 								process.exit(3);
 							});
-							
-							
-						}	
-					
-					);
-				}
-		}
+						} // end hashPassword callback	
+					); // end hashPassword()
+				} // end else (no users already)
+		} // END User.count().then()
 );
 
 
 
 
-// process.exit(main());

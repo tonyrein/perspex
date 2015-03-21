@@ -19,7 +19,8 @@ module.exports = function(){
 	var sequelize = exports.sequelize = new Sequelize(sql.name, sql.user, sql.password,
 			{
 				dialect: 'sqlite',
-				storage: sql.name
+				storage: sql.name,
+				logging: false,
 			});
  
 	sequelize.authenticate().complete( function(err) {
