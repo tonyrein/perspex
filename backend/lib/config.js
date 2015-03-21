@@ -10,6 +10,7 @@ var es_scroll_duration = '30s';
 var env = 'development';
 var view_engine = 'jade';
 var views = __dirname + '/views';
+var userdb_name = 'perspex.db';
 
 var es_host = '', es_port = '';
 if ('development' == env)
@@ -18,7 +19,7 @@ if ('development' == env)
 	es_port = '9200';
 }
 
-exports.config = {
+module.exports.config = {
 	port : port,
 	es : {
 		index : es_index,
@@ -33,6 +34,7 @@ exports.config = {
 		default_session_recording_fields : 'filename,contents',
 	},
 	env : env,
+	userdb_name: userdb_name,
 	view_engine : view_engine,
 	views : views,
 };

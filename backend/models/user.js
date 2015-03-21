@@ -1,5 +1,5 @@
-var sequelize 	= module.parent.exports.sequelize,
-Sequelize 		= require('sequelize');
+var sequelize 	= module.parent.exports.sequelize;
+var Sequelize 		= require('sequelize');
 
 /* Sequelize model definition for user
  * All options, types and validations can be found
