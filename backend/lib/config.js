@@ -10,7 +10,7 @@ var es_scroll_duration = '30s';
 var env = 'development';
 var view_engine = 'jade';
 var views = __dirname + '/views';
-var userdb_name = 'perspex.db';
+var userdb_name = appRoot + '/perspex.db';
 
 var es_host = '', es_port = '';
 if ('development' == env)

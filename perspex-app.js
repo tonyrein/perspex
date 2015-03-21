@@ -1,3 +1,8 @@
+// set a global variable so that other
+// modules can find stuff:
+var path = require('path');
+global.appRoot = path.resolve(__dirname);
+
 var express	= require('express');
 var app 		= express();
 var config 		= require('./config/config').configure(app);

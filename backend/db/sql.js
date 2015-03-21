@@ -2,12 +2,12 @@ var userdb_name = require('../lib/config').config.userdb_name;
 
 module.exports = function(){
 	var sqlite3 = require('sqlite3');
-	Sequelize = require('sequelize');
-
+	
+	Sequelize = require('sequelize'),
 	/* Update database credentials here
 	 * based on your own system's configuration
 	 */
-	var sql = {
+	sql = {
 		'name': userdb_name,
 		'user': 'NA',
 		'host': 'NA',
