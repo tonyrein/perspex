@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 /**
- * Run this program from the command line to initialize Perspex before first use.
+ * Run this program from the command line to initialize Perspex before first
+ * use.
  * 
  * As of 2015-03-21, it initializes the Perspex user database by creating the
  * database file and inserting a single user.
@@ -10,92 +11,49 @@
  * 
  */
 'use strict';
-//set a global variable so that other
-//modules can find stuff:
+// set a global variable so that other
+// modules can find stuff:
 var path = require('path');
 global.appRoot = path.resolve('..');
+
+// next line should create database if it doesn't already exist.
 var User = require(appRoot + '/backend/db/sql').User;
 
+// minimist supplies command-line argument parsing.
 var argv = require('minimist')(process.argv.slice(2));
-
+var hashPassword = require(appRoot + '/backend/passport/passport').hashPassword;
 
 var showUsage = function()
 {
+	console.log("perspex_init is intended to initialize the Perspex");
+	console.log("database prior to the first run of the Perspex web application.\n");
+	console.log("perspex_init will create the database, if it doesn't already exist,");
+	console.log("and create an administrative user with the name and password supplied");
+	console.log("on the command line.\n");
 	console.log('Usage:');
 	console.log("\tperspex_init -u user -p password");
 	console.log("\n\tUser and password are both mandatory.");
 	console.log("\n\tFor best results, enclose user name and password");
-	console.log("\t\tin single quotes. For example:");
-	console.log("\t\tProg Name -u 'joeblow' -p 'Bo$w0rth'");
+	console.log("\tin single quotes. For example:");
+	console.log("\t  perspex_init -u 'joeblow' -p 'Bo$w0rth'\n");
 };
 
 
-var warn_already_users = function()
-{
-	console.log("ERROR: The user database already contains at least one user.");
-	console.log("Please start the Perspex Web app and use its administrative");
-	console.log("pages to add, remove, or modify users' records.");
-	console.log("\nIf you want to start from scratch, delete the Perspex users");
-	console.log("database file and then run this program again. By default, that file");
-	console.log("is located in the Perspex root directory (the directory containing");
-	console.log("the file 'perspex-app.js'), although you may select another");
-	console.log("file name or location by editing backend/lib/config.js");
-};
+ var warn_already_users = function()
+ {
+ console.log("\nERROR: The user database already contains at least one user.");
+ console.log("Please start the Perspex Web app and use its administrative");
+ console.log("pages to add, remove, or modify users' records.");
+ console.log("\nIf you want to start from scratch, remove the Perspex users");
+ console.log("database file and then run this program again. By default, that file");
+ console.log("is located in the Perspex root directory \(the directory containing");
+ console.log("the file 'perspex-app.js'\), although you may select another");
+ console.log("file name or location by editing backend/lib/config.js.\n\n");
+ };
 
-/**
- * Check to see if user count > 0. If yes,
- * warn and exit.
- */
-var exit_if_already_users = function()
-{
-	return User.count().then(function(res)
-		{
-			if (res > 0)
-				{
-					warn_already_users();
-					return 1;
-				}
-		}	
-	);
-	
-};
+// MAIN
 
-var main = function()
-{
-	if (argv.h)
-	{
-		showUsage();
-		return 0;
-	}
-	if ( (! argv.u) || (! argv.p) )
-	{
-		showUsage();
-		return 1;
-	}
-	console.log("You entered:");
-	console.log("\tUser: " + argv.u);
-	console.log("\tPassword: " + argv.p);
-	
-	
-	// Check to see if there are already users. If so, exit.
-	
-	User.count().
-	success(function(res)
-			{
-				console.log("in then function. res = " + res);
-				if (res > 0)
-					{
-						console.log("There are already users.");
-						return 1;
-					}
-			}
-	);
-	return 3;
-	
-	
-	return 0;
-};
-
+// verify command-line parameters:
 if (argv.h)
 {
 	showUsage();
@@ -106,25 +64,54 @@ if ( (! argv.u) || (! argv.p) )
 	showUsage();
 	process.exit(1);
 }
-console.log("You entered:");
-console.log("\tUser: " + argv.u);
-console.log("\tPassword: " + argv.p);
 
-
-// Check to see if there are already users. If so, exit.
-console.log("just before call to count()");
+// Parameters OK -- we have a user name and password.
+// Next, make sure we're not overwriting a good user database:
 User.count().then(function(res)
 		{
-			console.log("in then function. res = " + res);
 			if (res > 0)
 				{
-					console.log("There are already users.");
+					warn_already_users();
 					process.exit(2);
+				}
+			else
+				{
+					console.log("\nNew user database found or successfully created.");
+					console.log("Will now add user with specified name and password...\n");
+					// first, hash the password
+					hashPassword(argv.p, function(err, hpwd)
+						{
+							// Now add a user to the database.
+							// hpwd contains hashed password
+							User.create( {
+								username: argv.u,
+								role: 'ADMIN',
+								email_address: 'none@example.com', // email not used at present.
+								password: hpwd
+							}).success(function(User) {
+								console.log("Successfully created user " + argv.u);
+								console.log("with password " + argv.p);
+								process.exit(0);
+							}).
+							error(function(err){
+								console.log("ERROR: There was a problem creating the user:");
+								for (var k in err)
+									{
+									console.log(k + ": " + err[k]);
+									}
+								
+								process.exit(3);
+							});
+							
+							
+						}	
+					
+					);
 				}
 		}
 );
-process.exit(0);
 
 
 
-//process.exit(main());
+
+// process.exit(main());
