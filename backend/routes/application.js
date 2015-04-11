@@ -122,7 +122,7 @@ exports.buildQueryPage = function(req, res)
 };
 exports.createUser = function(req, res)
 {
-	res.render('create', {
+	res.render('admin/create', {
 		title : 'Create User',
 		coffeescript : [ {
 			js : '/js/postHelper.js'
@@ -133,7 +133,7 @@ exports.createUser = function(req, res)
 
 exports.updateUser = function(req, res)
 {
-	res.render('update', {
+	res.render('admin/update', {
 		title : 'Update User',
 		coffeescript : [ {
 			js : '/js/postHelper.js'

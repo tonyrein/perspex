@@ -1,10 +1,11 @@
-extends layout
+extends ../layout
 
 block content
   .container
     .login-container
       div(class="#{nav_class}")
-      form.form-horizontal.form-signin(action="/user/create" method="POST")
+      #form.form-horizontal.form-signin(action="/user/create" method="POST")
+      form.form-horizontal.form-signin(action="/api/create_user" method="POST")
         h2.form-signin-heading Sign up
         br
 
