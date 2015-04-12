@@ -3,7 +3,7 @@
  */
 
 // all environments
-var port = process.env.PORT || '3000';
+var port = process.env.PORT || '4000';
 var es_index = 'hon_ssh';
 var es_chunk_size = '5000';
 var es_scroll_duration = '30s';

@@ -7,7 +7,7 @@ block content
       img.img-circle.img-responsive(src="#{user.picture}" alt="#{user.first_name}")
     
     .login-container
-      form.form-horizontal.form-signin(action="/user/update" method="POST")
+      form.form-horizontal.form-signin(action="/api/update_user" method="POST")
         h2.form-signin-heading Update Information
         br
         .form-group
